@@ -303,7 +303,9 @@ app.post("/chat/clear", (req, res) => {
     conversations.delete(sessionId);
     res.json({ ok: true, message: "Conversation cleared" });
 });
-
+app.get("/", (req, res) => {
+  res.send("Cosmetic Analyzer API is running ✅");
+});
 app.listen(PORT, () => {
     console.log(`🚀 Server listening on http://localhost:${PORT}`);
     console.log(`📡 API endpoints:`);
@@ -311,3 +313,5 @@ app.listen(PORT, () => {
     console.log(`   - POST /chat (AI chat)`);
     console.log(`🤖 Using model: gemini-2.5-flash`);
 });
+import dotenv from "dotenv";
+dotenv.config();
