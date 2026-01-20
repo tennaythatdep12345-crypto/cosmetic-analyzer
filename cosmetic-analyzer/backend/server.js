@@ -313,5 +313,4 @@ app.listen(PORT, () => {
     console.log(`   - POST /chat (AI chat)`);
     console.log(`🤖 Using model: gemini-2.5-flash`);
 });
-import dotenv from "dotenv";
-dotenv.config();
+
