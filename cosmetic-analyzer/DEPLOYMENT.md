@@ -106,7 +106,7 @@ vercel
    
    Create `frontend/.env.production`:
    ```env
-   VITE_API_BASE=https://your-backend-url.onrender.com
+   VITE_API_BASE=https://cosmetic-analyzer.onrender.com
    ```
 
 2. **Deploy with Vercel CLI**
@@ -126,7 +126,7 @@ vercel
      - **Build Command**: `npm run build`
      - **Output Directory**: `dist`
    - Add environment variable:
-     - `VITE_API_BASE`: `https://your-backend-url.onrender.com`
+     - `VITE_API_BASE`: `https://cosmetic-analyzer.onrender.com`
    - Deploy!
 
 ### Option 2: Netlify
