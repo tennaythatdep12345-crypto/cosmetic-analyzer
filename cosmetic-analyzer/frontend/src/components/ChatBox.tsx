@@ -8,10 +8,10 @@ interface Message {
     timestamp: Date;
 }
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'https://cosmetic-analyzer.onrender.com';
 
 export default function ChatBox() {
-    const { t, i18n } = useTranslation();
+    const { i18n } = useTranslation();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
