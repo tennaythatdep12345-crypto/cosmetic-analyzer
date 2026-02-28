@@ -76,7 +76,7 @@ export default function Home() {
                                 </div>
                                 <div className="flex-1 text-center">
                                     <div className="inline-block px-3 py-1 rounded bg-gray-200/50 dark:bg-black/20 text-xs text-gray-500 font-mono">
-                                        skinlab.ai/analyze
+                                        formulation-risk-ai/analyze
                                     </div>
                                 </div>
                             </div>

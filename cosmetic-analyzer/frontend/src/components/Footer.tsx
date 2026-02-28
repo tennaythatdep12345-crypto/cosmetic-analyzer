@@ -14,8 +14,8 @@ export default function Footer() {
                     <div>
                         <Link to="/" className="flex items-center gap-2 mb-4">
                             <span className="text-3xl">💄</span>
-                            <span className="text-xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                                SkinLab AI
+                            <span className="text-sm md:text-base font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
+                                {t('common.brandName')}
                             </span>
                         </Link>
                         <p className="text-gray-400 text-sm mb-4">
@@ -81,7 +81,7 @@ export default function Footer() {
                 <div className="mt-12 pt-8 border-t border-gray-800">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-gray-400 text-sm">
-                            © {currentYear} SkinLab AI. {t('footer.rights')}.
+                            © {currentYear} {t('common.brandName')}. {t('footer.rights')}.
                         </p>
                         <p className="text-gray-500 text-xs">
                             ⚠️ {t('footer.disclaimer')}

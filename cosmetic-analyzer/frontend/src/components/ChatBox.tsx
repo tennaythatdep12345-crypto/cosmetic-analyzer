@@ -8,10 +8,10 @@ interface Message {
     timestamp: Date;
 }
 
-const API_URL = 'https://cosmetic-analyzer.onrender.com';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function ChatBox() {
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -19,6 +19,7 @@ export default function ChatBox() {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const sessionId = useRef(`session_${Date.now()}`);
+    const brandName = t('common.brandName');
 
     // Scroll to bottom when new messages
     useEffect(() => {
@@ -36,10 +37,10 @@ export default function ChatBox() {
     useEffect(() => {
         if (isOpen && messages.length === 0) {
             const welcomeMsg = i18n.language === 'vi'
-                ? 'Xin chào! 👋 Tôi là SkinLab AI - trợ lý tư vấn mỹ phẩm của bạn. Hãy hỏi tôi về thành phần mỹ phẩm, chăm sóc da, hoặc bất kỳ vấn đề da liễu nào nhé!'
+                ? `Xin chào! 👋 Tôi là ${brandName}. Bạn có thể hỏi về tương thích công thức, ổn định, Tech Transfer và Regulatory.`
                 : i18n.language === 'fr'
-                    ? 'Bonjour! 👋 Je suis SkinLab AI - votre assistant cosmétique. Posez-moi des questions sur les ingrédients, les soins de la peau, ou tout problème dermatologique!'
-                    : 'Hello! 👋 I\'m SkinLab AI - your cosmetic advisor. Ask me about ingredients, skincare routines, or any skin concerns!';
+                    ? `Bonjour! 👋 Je suis ${brandName}. Posez-moi des questions sur la compatibilité formulation, la stabilité, le Tech Transfer et le réglementaire.`
+                    : `Hello! 👋 I'm ${brandName}. Ask me about formulation compatibility, stability, tech transfer, and regulatory risk.`;
 
             setMessages([{
                 id: 'welcome',
@@ -155,9 +156,9 @@ export default function ChatBox() {
                         <div className="flex items-center gap-3">
                             <span className="text-2xl">🤖</span>
                             <div>
-                                <h3 className="font-bold">SkinLab AI</h3>
+                                <h3 className="font-bold">{brandName}</h3>
                                 <p className="text-xs text-white/80">
-                                    {i18n.language === 'vi' ? 'Tư vấn mỹ phẩm' : i18n.language === 'fr' ? 'Conseiller beauté' : 'Beauty Advisor'}
+                                    {i18n.language === 'vi' ? 'Hỗ trợ đánh giá rủi ro công thức' : i18n.language === 'fr' ? 'Support risque formulation' : 'Formulation Risk Support'}
                                 </p>
                             </div>
                         </div>

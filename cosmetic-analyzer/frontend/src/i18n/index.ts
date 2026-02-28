@@ -76,7 +76,7 @@ const resources = {
                     accuracy: 'Độ chính xác AI',
                 },
                 features: {
-                    title: 'Tại sao chọn SkinLab AI?',
+                    title: 'Tại sao chọn AI hỗ trợ đánh giá rủi ro công thức & tuân thủ quy định?',
                     subtitle: 'Công nghệ AI tiên tiến giúp bạn đọc hiểu thành phần mỹ phẩm một cách dễ dàng',
                     analysis: {
                         title: 'Nhận diện thông minh',
@@ -176,6 +176,20 @@ const resources = {
                     notable: 'Thành phần nổi bật',
                     fullList: 'Danh sách đầy đủ thành phần',
                     ingredients: 'thành phần',
+                    excellent: 'Xuất sắc',
+                    good: 'Tốt',
+                    moderate: 'Trung bình',
+                    consider: 'Cần cân nhắc',
+                    mainIngredients: 'Thành phần chính',
+                    safe: 'An toàn',
+                    low_risk: 'Rủi ro thấp',
+                    watch: 'Cần lưu ý',
+                    avoid: 'Nên tránh',
+                    compatible: 'Tương thích',
+                    avoidCombining: 'Nên tránh',
+                    noInteraction: 'Không tương tác',
+                    analysisResult: 'Kết quả phân tích',
+                    productType: 'Loại sản phẩm',
                 },
             },
             // Knowledge page
@@ -201,7 +215,7 @@ const resources = {
             },
             // About page
             about: {
-                title: 'Về SkinLab AI',
+                title: 'Về hệ thống AI hỗ trợ đánh giá rủi ro công thức & tuân thủ quy định',
                 subtitle: 'Giải pháp phân tích mỹ phẩm thông minh',
                 mission: {
                     title: 'Sứ mệnh',
@@ -218,6 +232,7 @@ const resources = {
             },
             // Common
             common: {
+                brandName: 'AI hỗ trợ đánh giá rủi ro công thức & tuân thủ quy định',
                 learnMore: 'Tìm hiểu thêm',
                 getStarted: 'Bắt đầu',
                 loading: 'Đang tải...',
@@ -226,7 +241,7 @@ const resources = {
             },
             // Footer
             footer: {
-                tagline: 'Giải mã mỹ phẩm với AI',
+                tagline: 'Nền tảng AI cho đánh giá rủi ro công thức và tuân thủ quy định',
                 links: 'Liên kết',
                 contact: 'Liên hệ',
                 rights: 'Đã đăng ký bản quyền',
@@ -312,7 +327,7 @@ const resources = {
                     accuracy: 'AI accuracy',
                 },
                 features: {
-                    title: 'Why choose SkinLab AI?',
+                    title: 'Why choose AI-assisted Formulation Risk & Regulatory Compliance?',
                     subtitle: 'Advanced AI technology helps you understand cosmetic ingredients easily',
                     analysis: {
                         title: 'Smart Recognition',
@@ -411,6 +426,20 @@ const resources = {
                     notable: 'Notable Ingredients',
                     fullList: 'Full Ingredient List',
                     ingredients: 'ingredients',
+                    excellent: 'Excellent',
+                    good: 'Good',
+                    moderate: 'Moderate',
+                    consider: 'Consider',
+                    mainIngredients: 'Main Ingredients',
+                    safe: 'Safe',
+                    low_risk: 'Low Risk',
+                    watch: 'Watch',
+                    avoid: 'Avoid',
+                    compatible: 'Compatible',
+                    avoidCombining: 'Avoid Combining',
+                    noInteraction: 'No Interaction',
+                    analysisResult: 'Analysis Result',
+                    productType: 'Product Type',
                 },
             },
             knowledge: {
@@ -434,7 +463,7 @@ const resources = {
                 },
             },
             about: {
-                title: 'About SkinLab AI',
+                title: 'About AI-assisted Formulation Risk & Regulatory Compliance',
                 subtitle: 'Smart cosmetic analysis solution',
                 mission: {
                     title: 'Mission',
@@ -450,6 +479,7 @@ const resources = {
                 },
             },
             common: {
+                brandName: 'AI-assisted Formulation Risk & Regulatory Compliance',
                 learnMore: 'Learn More',
                 getStarted: 'Get Started',
                 loading: 'Loading...',
@@ -457,7 +487,7 @@ const resources = {
                 retry: 'Retry',
             },
             footer: {
-                tagline: 'Decode cosmetics with AI',
+                tagline: 'AI platform for formulation risk assessment and regulatory compliance support',
                 links: 'Links',
                 contact: 'Contact',
                 rights: 'All rights reserved',
@@ -542,7 +572,7 @@ const resources = {
                     accuracy: 'Précision IA',
                 },
                 features: {
-                    title: 'Pourquoi choisir SkinLab AI?',
+                    title: 'Pourquoi choisir l’IA d’évaluation des risques de formulation et conformité réglementaire ?',
                     subtitle: 'La technologie IA avancée vous aide à comprendre facilement les ingrédients cosmétiques',
                     analysis: {
                         title: 'Reconnaissance intelligente',
@@ -641,6 +671,20 @@ const resources = {
                     notable: 'Ingrédients notables',
                     fullList: 'Liste complète des ingrédients',
                     ingredients: 'ingrédients',
+                    excellent: 'Excellent',
+                    good: 'Bon',
+                    moderate: 'Moyen',
+                    consider: 'À considérer',
+                    mainIngredients: 'Ingrédients principaux',
+                    safe: 'Sûr',
+                    low_risk: 'Risque faible',
+                    watch: 'À surveiller',
+                    avoid: 'À éviter',
+                    compatible: 'Compatible',
+                    avoidCombining: 'À éviter',
+                    noInteraction: 'Sans interaction',
+                    analysisResult: 'Résultat de l\'analyse',
+                    productType: 'Type de produit',
                 },
             },
             knowledge: {
@@ -664,7 +708,7 @@ const resources = {
                 },
             },
             about: {
-                title: 'À propos de SkinLab AI',
+                title: 'À propos de l’IA d’évaluation des risques de formulation et conformité réglementaire',
                 subtitle: 'Solution d\'analyse cosmétique intelligente',
                 mission: {
                     title: 'Mission',
@@ -680,6 +724,7 @@ const resources = {
                 },
             },
             common: {
+                brandName: 'IA d’évaluation des risques de formulation et conformité réglementaire',
                 learnMore: 'En savoir plus',
                 getStarted: 'Commencer',
                 loading: 'Chargement...',
@@ -687,7 +732,7 @@ const resources = {
                 retry: 'Réessayer',
             },
             footer: {
-                tagline: 'Décoder les cosmétiques avec l\'IA',
+                tagline: 'Plateforme IA pour l’évaluation des risques de formulation et l’appui conformité réglementaire',
                 links: 'Liens',
                 contact: 'Contact',
                 rights: 'Tous droits réservés',
@@ -707,8 +752,8 @@ const resources = {
 
 i18n.use(initReactI18next).init({
     resources,
-    lng: 'vi', // Default language
-    fallbackLng: 'vi',
+    lng: 'fr', // Default language
+    fallbackLng: 'fr',
     interpolation: {
         escapeValue: false,
     },

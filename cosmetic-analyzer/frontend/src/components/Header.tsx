@@ -37,8 +37,8 @@ export default function Header() {
                     {/* Logo */}
                     <Link to="/" className="flex items-center gap-2 group">
                         <span className="text-3xl transform group-hover:scale-110 transition-transform duration-300">💄</span>
-                        <span className="text-xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-                            SkinLab AI
+                        <span className="text-sm md:text-base font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                            {t('common.brandName')}
                         </span>
                     </Link>
 
