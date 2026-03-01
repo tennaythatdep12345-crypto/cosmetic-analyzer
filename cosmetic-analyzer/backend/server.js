@@ -50,6 +50,84 @@ if (!API_KEY) {
 
 const unavailablePattern = /data unavailable|no data available|chưa có dữ liệu|không có dữ liệu|non disponible|indisponible/i;
 
+// ─── OCR Stabilizer microservice ─────────────────────────────────────────────
+// Start the Python service: cd backend && uvicorn stabilizer_service:app --port 3002
+// Set STABILIZER_ENABLED=false in .env to bypass without removing the code.
+const STABILIZER_URL = process.env.STABILIZER_URL || 'http://localhost:3002';
+const STABILIZER_ENABLED = process.env.STABILIZER_ENABLED !== 'false';
+
+/**
+ * Call the Python OCR Stabilizer microservice.
+ * Accepts either:
+ *   • a single pre-joined ingredient string  → POST /stabilize/single
+ *   • an array of OCR text blocks (multi-run) → POST /stabilize
+ * Gracefully returns null if the service is unreachable (non-blocking).
+ */
+async function callStabilizerService(ingredientsRaw, textBlocks = null) {
+    if (!STABILIZER_ENABLED) return null;
+    if (!ingredientsRaw?.length && !textBlocks?.length) return null;
+    try {
+        const blocks = textBlocks ?? [ingredientsRaw.join(', ')];
+        const endpoint = blocks.length === 1 ? '/stabilize/single' : '/stabilize';
+        const body = blocks.length === 1
+            ? { text: blocks[0] }
+            : { text_blocks: blocks };
+
+        const stabRes = await fetch(`${STABILIZER_URL}${endpoint}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            signal: AbortSignal.timeout(3500),   // 3.5 s — don't block the main flow
+        });
+        if (!stabRes.ok) return null;
+        return await stabRes.json();
+    } catch {
+        // Service not running — analysis continues without stabilization
+        return null;
+    }
+}
+
+/**
+ * Merge OCR stabilization results into the AI-parsed object.
+ * • Replaces ingredients_raw with the INCI-corrected stable list.
+ * • Marks ingredients_analyzed entries that are absent from the stable list
+ *   as uncertain (they may have been OCR noise).
+ * • Attaches ocr_stability metadata for downstream use and transparency.
+ */
+function mergeStabilizedIngredients(parsed, stabResult) {
+    if (!stabResult?.stable_ingredients?.length) return parsed;
+
+    const stableSet = new Set(
+        stabResult.stable_ingredients.map(n => n.toLowerCase())
+    );
+    const rawDetectedSet = new Set(
+        (stabResult.raw_detected_ingredients || []).map(n => n.toLowerCase())
+    );
+
+    const updatedAnalyzed = (parsed.ingredients_analyzed || []).map(item => {
+        const nameLower = (item?.name || '').toLowerCase();
+        const verified = stableSet.has(nameLower) || rawDetectedSet.has(nameLower);
+        return { ...item, uncertain: item.uncertain || !verified };
+    });
+
+    return {
+        ...parsed,
+        ingredients_raw: stabResult.stable_ingredients,
+        ingredients_analyzed: updatedAnalyzed,
+        ocr_stability: {
+            stable_ingredients: stabResult.stable_ingredients,
+            raw_detected_ingredients: stabResult.raw_detected_ingredients,
+            vote_counts: stabResult.vote_counts,
+            best_scores: stabResult.best_scores,
+            coverage_percentage: stabResult.coverage_percentage,
+            confidence_level: stabResult.confidence_level,
+            pass_reasons: stabResult.pass_reasons,
+            blocks_processed: stabResult.blocks_processed,
+        },
+    };
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const riskScore = { low: 1, moderate: 2, medium: 2, high: 3 };
 
 const t = {
@@ -1288,6 +1366,16 @@ app.post("/analyze", async (req, res) => {
             return res.status(500).json({ ok: false, error: "Failed to parse AI response: " + e.message, raw: text.slice(0, 1000) });
         }
 
+        // ── OCR Stabilization Layer ──────────────────────────────────────────
+        const stabResult = await callStabilizerService(parsed.ingredients_raw || []);
+        if (stabResult) {
+            console.log(`🔬 Stabilizer: ${stabResult.stable_ingredients.length} stable ingredients, coverage ${stabResult.coverage_percentage}%, confidence ${stabResult.confidence_level}`);
+            parsed = mergeStabilizedIngredients(parsed, stabResult);
+        } else {
+            console.log('ℹ️  Stabilizer service not available — proceeding with raw Gemini output.');
+        }
+        // ────────────────────────────────────────────────────────────────────
+
         const enriched = applyReasoningLayer(parsed, language);
         res.json({ ok: true, result: enriched });
     } catch (err) {
@@ -1422,6 +1510,14 @@ app.post("/analyze-text", async (req, res) => {
 
         // Inject provided product_type if AI left it blank
         if (!parsed.product_type || parsed.product_type === 'other') parsed.product_type = product_type;
+
+        // ── OCR Stabilization Layer ──────────────────────────────────────────
+        const stabResult = await callStabilizerService(parsed.ingredients_raw || []);
+        if (stabResult) {
+            console.log(`🔬 Stabilizer (text): ${stabResult.stable_ingredients.length} stable, coverage ${stabResult.coverage_percentage}%`);
+            parsed = mergeStabilizedIngredients(parsed, stabResult);
+        }
+        // ────────────────────────────────────────────────────────────────────
 
         const enriched = applyReasoningLayer(parsed, language);
         res.json({ ok: true, mode: 'inci-text-analysis', result: enriched });
