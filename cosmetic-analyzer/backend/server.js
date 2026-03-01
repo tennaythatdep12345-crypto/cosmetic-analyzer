@@ -877,10 +877,195 @@ function runReasoningEngine(parsed, language = 'en') {
     };
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Comedogenic Rating Database (Kligman Scale 0–5)
+// Sources: Cosmetic Dermatology (Draelos), JAMA Dermatology, IKW, PCPC
+// 0 = non-comedogenic, 1 = low, 2 = low-moderate, 3 = moderate, 4 = high, 5 = very high
+// ─────────────────────────────────────────────────────────────────────────────
+const comedogenicDB = {
+    // ── Water / Basic solvents ──────────────────────────────
+    'water': 0, 'aqua': 0, 'glycerin': 0, 'glycerol': 0,
+    'butylene glycol': 0, 'propylene glycol': 0, 'dipropylene glycol': 0,
+    'pentylene glycol': 0, 'hexylene glycol': 0, 'propanediol': 0,
+    'ethoxydiglycol': 0, 'ethanol': 0, 'alcohol denat': 0,
+
+    // ── Humectants ──────────────────────────────────────────
+    'hyaluronic acid': 0, 'sodium hyaluronate': 0, 'betaine': 0,
+    'trehalose': 0, 'sodium pca': 0, 'pca': 0, 'urea': 0,
+    'sorbitol': 0, 'xylitol': 0, 'inositol': 0, 'panthenol': 0,
+    'polyglutamic acid': 0, 'allantoin': 0, 'aloe barbadensis leaf juice': 0,
+    'caprylyl glycol': 1,
+
+    // ── Ceramides / Barrier ─────────────────────────────────
+    'ceramide np': 0, 'ceramide ap': 0, 'ceramide eop': 0,
+    'ceramide ns': 0, 'ceramide as': 0,
+    'ceramide 1': 0, 'ceramide 2': 0, 'ceramide 3': 0, 'ceramide 6 ii': 0,
+    'ceramides': 0, 'phytosphingosine': 0, 'sphingosine': 0,
+    'cholesterol': 0, 'linoleic acid': 0,
+
+    // ── Silicones ───────────────────────────────────────────
+    'dimethicone': 1, 'cyclopentasiloxane': 1, 'cyclomethicone': 1,
+    'cyclopentasiloxane/dimethicone': 1, 'phenyl trimethicone': 1,
+    'bis-peg/ppg-14/14 dimethicone': 1,
+
+    // ── Fatty Alcohols ──────────────────────────────────────
+    'cetyl alcohol': 2, 'cetearyl alcohol': 2, 'stearyl alcohol': 2,
+    'behenyl alcohol': 1, 'lauryl alcohol': 2,
+
+    // ── Fatty Acids ─────────────────────────────────────────
+    'stearic acid': 2, 'palmitic acid': 2, 'myristic acid': 3,
+    'lauric acid': 4, 'oleic acid': 2, 'linolenic acid': 2,
+    'caprylic acid': 1, 'capric acid': 1,
+
+    // ── Esters / Emollients ─────────────────────────────────
+    'isopropyl myristate': 5, 'isopropyl palmitate': 4,
+    'isopropyl isostearate': 5, 'isopropyl linoleate': 5,
+    'ethylhexyl palmitate': 3, 'ethylhexyl stearate': 2,
+    'c12-15 alkyl benzoate': 2, 'diisopropyl adipate': 2,
+    'cetyl octanoate': 2,
+    'caprylic/capric triglyceride': 1,
+
+    // ── Plant Oils ──────────────────────────────────────────
+    'squalane': 1, 'squalene': 1,
+    'jojoba oil': 2, 'simmondsia chinensis seed oil': 2,
+    'argan oil': 0, 'argania spinosa kernel oil': 0,
+    'rosehip oil': 1, 'rosa canina fruit oil': 1,
+    'marula oil': 3, 'sclerocarya birrea seed oil': 3,
+    'shea butter': 0, 'butyrospermum parkii butter': 0,
+    'cocoa butter': 4, 'theobroma cacao seed butter': 4,
+    'sweet almond oil': 2, 'prunus amygdalus dulcis oil': 2,
+    'sunflower seed oil': 0, 'helianthus annuus seed oil': 0,
+    'coconut oil': 4, 'cocos nucifera oil': 4,
+    'olive oil': 2, 'olea europaea fruit oil': 2,
+    'hemp seed oil': 0, 'cannabis sativa seed oil': 0,
+    'evening primrose oil': 2, 'oenothera biennis oil': 2,
+    'grapeseed oil': 1, 'vitis vinifera seed oil': 1,
+    'avocado oil': 3, 'persea gratissima oil': 3,
+    'meadowfoam seed oil': 1, 'limnanthes alba seed oil': 1,
+    'castor oil': 1, 'ricinus communis seed oil': 1,
+    'sea buckthorn oil': 2,
+    'mineral oil': 2, 'paraffinum liquidum': 2,
+
+    // ── Waxes / Occlusives ──────────────────────────────────
+    'petrolatum': 0, 'beeswax': 2, 'cera alba': 2,
+    'carnauba wax': 1, 'copernicia cerifera cera': 1,
+    'candelilla wax': 1, 'euphorbia cerifera cera': 1,
+    'lanolin': 1, 'lanolin alcohol': 2, 'ozokerite': 1,
+
+    // ── Emulsifiers / Surfactants ───────────────────────────
+    'glyceryl stearate': 1, 'glyceryl stearate se': 1,
+    'glyceryl oleate': 1,
+    'ceteareth-20': 3, 'ceteareth-12': 2,
+    'steareth-2': 4, 'steareth-20': 2,
+    'polysorbate 20': 0, 'polysorbate 60': 3, 'polysorbate 80': 0,
+    'sorbitan stearate': 3, 'sorbitan oleate': 3,
+    'peg-40 hydrogenated castor oil': 0,
+    'peg-60 hydrogenated castor oil': 0,
+    'lecithin': 0, 'hydrogenated lecithin': 0,
+    'sodium lauryl sulfate': 0, 'sodium laureth sulfate': 0,
+    'ammonium lauryl sulfate': 0, 'ammonium laureth sulfate': 0,
+    'cocamidopropyl betaine': 0, 'sodium cocoyl isethionate': 0,
+    'sodium lauroyl sarcosinate': 0, 'sodium lauroyl glutamate': 0,
+    'decyl glucoside': 0, 'lauryl glucoside': 0, 'coco-glucoside': 0,
+    'sodium cocoamphoacetate': 0,
+    'cocamidopropyl hydroxysultaine': 0,
+    'sodium methyl cocoyl taurate': 0,
+    'disodium laureth sulfosuccinate': 0,
+    'peg-150 pentaerythrityl tetrastearate': 1,
+
+    // ── Thickeners / Polymers ───────────────────────────────
+    'carbomer': 1, 'acrylates copolymer': 1,
+    'acrylates/c10-30 alkyl acrylate crosspolymer': 1,
+    'xanthan gum': 0, 'guar gum': 1, 'hydroxyethylcellulose': 0,
+    'hydroxypropyl methylcellulose': 0, 'cellulose gum': 0,
+    'sodium carboxymethylcellulose': 0, 'carrageenan': 0,
+    'polyacrylate crosspolymer-6': 0, 'sodium polyacrylate': 0,
+
+    // ── pH Adjusters ────────────────────────────────────────
+    'triethanolamine': 2, 'citric acid': 0, 'lactic acid': 0,
+    'sodium hydroxide': 0, 'potassium hydroxide': 0,
+    'sodium citrate': 0, 'sodium lactate': 0,
+    'disodium edta': 0, 'tetrasodium edta': 0,
+    'aminomethyl propanol': 0, 'arginine': 0,
+
+    // ── Actives / AHA·BHA ───────────────────────────────────
+    'salicylic acid': 0, 'glycolic acid': 0, 'mandelic acid': 0,
+    'malic acid': 0, 'tartaric acid': 0, 'azelaic acid': 0,
+    'benzoyl peroxide': 0, 'gluconolactone': 0,
+
+    // ── Actives / Vitamins ──────────────────────────────────
+    'ascorbic acid': 0, 'sodium ascorbyl phosphate': 0,
+    'ascorbyl glucoside': 0, 'magnesium ascorbyl phosphate': 0,
+    '3-o-ethyl ascorbic acid': 0,
+    'niacinamide': 0, 'tocopherol': 2, 'tocopheryl acetate': 0,
+    'retinol': 2, 'retinal': 2, 'retinaldehyde': 2,
+    'retinyl palmitate': 2, 'retinyl acetate': 2,
+    'hydroxypinacolone retinoate': 1, 'bakuchiol': 1,
+
+    // ── Actives / Brightening ───────────────────────────────
+    'kojic acid': 0, 'alpha-arbutin': 0, 'arbutin': 0,
+    'tranexamic acid': 0, 'ferulic acid': 0, 'niacinamide': 0,
+    'resveratrol': 0,
+
+    // ── Preservatives ───────────────────────────────────────
+    'phenoxyethanol': 0, 'ethylhexylglycerin': 0,
+    'benzyl alcohol': 0, 'dehydroacetic acid': 0,
+    'sodium benzoate': 0, 'potassium sorbate': 0,
+    'methylparaben': 0, 'ethylparaben': 0, 'propylparaben': 0,
+    'chlorphenesin': 0,
+
+    // ── Sunscreen Filters ───────────────────────────────────
+    'zinc oxide': 0, 'titanium dioxide': 0,
+    'octinoxate': 0, 'avobenzone': 0, 'octocrylene': 2,
+    'oxybenzone': 0, 'homosalate': 0, 'octisalate': 0,
+
+    // ── Antioxidants ────────────────────────────────────────
+    'bht': 0, 'bha': 0, 'propyl gallate': 0,
+
+    // ── Botanical Extracts ──────────────────────────────────
+    'centella asiatica extract': 0, 'asiaticoside': 0,
+    'madecassoside': 0, 'green tea extract': 0,
+    'camellia sinensis leaf extract': 0,
+    'aloe vera': 0, 'chamomile extract': 0,
+    'calendula extract': 0, 'oat extract': 0,
+    'avena sativa kernel extract': 0,
+    'snail secretion filtrate': 0, 'bifida ferment lysate': 0,
+    'saccharomyces ferment filtrate': 0,
+
+    // ── Pigments ────────────────────────────────────────────
+    'mica': 1, 'iron oxide': 0,
+};
+
+/**
+ * Patch comedogenic_rating in ingredients_analyzed using the local DB.
+ * Only overwrites if the AI returned 0 (default) — a real non-zero AI value
+ * is kept as-is.
+ * Also sets comedogenic_warning = true when rating >= 3.
+ */
+function applyComedogenicRatings(parsed) {
+    if (!Array.isArray(parsed.ingredients_analyzed)) return parsed;
+    const updated = parsed.ingredients_analyzed.map(item => {
+        const key = (item?.name || '').toLowerCase().trim();
+        const dbRating = comedogenicDB[key];
+        // Only override if we have a known rating AND the AI left it at 0
+        const rating = (dbRating !== undefined && (item.comedogenic_rating === 0 || item.comedogenic_rating === null || item.comedogenic_rating === undefined))
+            ? dbRating
+            : (item.comedogenic_rating ?? 0);
+        return {
+            ...item,
+            comedogenic_rating: rating,
+            comedogenic_warning: rating >= 3,
+        };
+    });
+    return { ...parsed, ingredients_analyzed: updated };
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function applyReasoningLayer(parsed, language = 'en') {
     const generated = runReasoningEngine(parsed, language);
+    const withComedogenic = applyComedogenicRatings(parsed);
     return {
-        ...parsed,
+        ...withComedogenic,
         formulation_compatibility: mergePreferExisting(parsed.formulation_compatibility, generated.formulation_compatibility),
         stability_awareness: mergePreferExisting(parsed.stability_awareness, generated.stability_awareness),
         process_relevant_insights: mergePreferExisting(parsed.process_relevant_insights, generated.process_relevant_insights),
