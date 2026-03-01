@@ -1,4 +1,5 @@
 services:
+  # ── Node.js backend ───────────────────────────────────────────────────────
   - type: web
     name: cosmetic-analyzer-api
     runtime: node
@@ -10,4 +11,19 @@ services:
         sync: false
       - key: PORT
         value: 3001
+      - key: STABILIZER_ENABLED
+        value: true
+      - key: STABILIZER_URL
+        # Render internal URL: https://<service-name>.onrender.com
+        # Update this after the stabilizer service is created on Render
+        value: https://cosmetic-stabilizer.onrender.com
+    healthCheckPath: /health
+
+  # ── Python OCR Stabilizer ─────────────────────────────────────────────────
+  - type: web
+    name: cosmetic-stabilizer
+    runtime: python
+    rootDir: cosmetic-analyzer/backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn stabilizer_service:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
